@@ -1,0 +1,35 @@
+name: Deploy to AWS RDS Postgres
+
+on:
+  push:
+    branches:
+      - main  # Triggers deployment when you push to the main branch. Change it based on your requirement.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Install PostgreSQL client
+      - name: Install PostgreSQL client
+        run: sudo apt-get install postgresql-client -y
+
+      # Step 3: Deploy DDL scripts to AWS RDS Postgres
+      - name: Deploy DDL Scripts
+        env:
+          PGHOST: ${{ secrets.DB_HOST }}
+          PGDATABASE: ${{ secrets.DB_NAME }}
+          PGUSER: ${{ secrets.DB_USER }}
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+          PGPORT: ${{ secrets.DB_PORT || '5432' }}  # Default to 5432 if not specified
+
+        run: |
+          # Run all .sql files in the sql/ directory
+          for file in $(ls sql/*.sql); do
+            echo "Running $file ..."
+            psql -f $file
+          done
