@@ -24,8 +24,13 @@ jobs:
         run: |
           # Get the list of changed SQL files
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.sql' || true)
-          echo "Changed SQL files: $CHANGED_FILES"
-          echo "::set-output name=files::$CHANGED_FILES"
+          
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Changed SQL files: $CHANGED_FILES"
+            echo "files=$CHANGED_FILES" >> $GITHUB_ENV  # Save to environment variable
+          else
+            echo "No SQL files were changed."
+          fi
 
       # Step 4: Deploy DDL scripts to AWS RDS Postgres
       - name: Deploy DDL Scripts
@@ -38,7 +43,7 @@ jobs:
 
         run: |
           # Loop through each changed SQL file and run it
-          for file in ${{ steps.changed_files.outputs.files }}; do
+          for file in $files; do
             echo "Running $file ..."
             psql --set ON_ERROR_STOP=1 -e -f $file
           done
