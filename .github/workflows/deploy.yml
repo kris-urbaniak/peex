@@ -31,5 +31,5 @@ jobs:
           # Run all .sql files in the sql/ directory
           for file in $(ls sql/*.sql); do
             echo "Running $file ..."
-            psql -f $file
+            psql --set ON_ERROR_STOP=1 -e -f $file
           done
