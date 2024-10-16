@@ -22,9 +22,12 @@ jobs:
       - name: List changed SQL files
         id: changed_files
         run: |
-          # Get the list of changed SQL files
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.sql' || true)
-          
+          # Ensure we have access to the previous commit and the current commit
+          git fetch --depth=2  # Fetch the previous commit as well
+
+          # Get the list of changed SQL files between the previous commit and the current commit
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '\.sql' || true)
+
           if [ -n "$CHANGED_FILES" ]; then
             echo "Changed SQL files: $CHANGED_FILES"
             echo "files=$CHANGED_FILES" >> $GITHUB_ENV  # Save to environment variable
