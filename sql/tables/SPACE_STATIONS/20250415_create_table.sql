@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS staging.astronauts_staging
+CREATE TABLE IF NOT EXISTS staging.space_stations_staging
 (
     message text COLLATE pg_catalog."default",
     load_ts timestamp without time zone,
