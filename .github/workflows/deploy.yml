@@ -1,9 +1,9 @@
-name: Deploy to AWS RDS Postgres
+name: Deploy SQL to Postgres
 
 on:
   push:
     branches:
-      - main  # Triggers deployment when you push to the main branch. Change it based on your requirement.
+      - main
 
 jobs:
   deploy:
@@ -13,42 +13,37 @@ jobs:
       # Step 1: Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       # Step 2: Install PostgreSQL client
       - name: Install PostgreSQL client
-        run: sudo apt-get install postgresql-client -y
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      # Step 3: Get list of changed SQL files
-      - name: List changed SQL files
-        id: changed_files
-        run: |
-          # Ensure we have access to the previous commit and the current commit
-          git fetch --depth=2  # Fetch the previous commit as well
-
-          # Get the list of changed SQL files between the previous commit and the current commit
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '\.sql' || true)
-
-          if [ -n "$CHANGED_FILES" ]; then
-            echo "Changed SQL files: $CHANGED_FILES"
-            echo "files=$CHANGED_FILES" >> $GITHUB_ENV  # Save to environment variable
-          else
-            echo "No SQL files were changed."
-          fi
-
-      # Step 4: Deploy DDL scripts to AWS RDS Postgres
-      - name: Deploy DDL Scripts
+      # Step 3: Apply SQL files by object and folder structure
+      - name: Apply SQL changes
         env:
           PGHOST: ${{ secrets.DB_HOST }}
           PGDATABASE: ${{ secrets.DB_NAME }}
           PGUSER: ${{ secrets.DB_USER }}
           PGPASSWORD: ${{ secrets.DB_PASSWORD }}
-          PGPORT: ${{ secrets.DB_PORT || '5432' }}  # Default to 5432 if not specified
-
+          PGPORT: ${{ secrets.DB_PORT || '5432' }}
         run: |
-          # Loop through each changed SQL file and run it
-          for file in $files; do
-            echo "Running $file ..."
-            psql --set ON_ERROR_STOP=1 -e -f $file
+          echo "Ensuring migration tracking table exists..."
+          psql -v ON_ERROR_STOP=1 <<EOF
+          CREATE TABLE IF NOT EXISTS public.schema_migrations (
+            filename TEXT PRIMARY KEY,
+            applied_at TIMESTAMPTZ DEFAULT now()
+          );
+          EOF
+
+          echo "Looking for new SQL files in sql/**/**..."
+          find sql/ -type f -name "*.sql" | sort | while read file; do
+            echo "Checking $file..."
+            ALREADY_APPLIED=$(psql -t -c "SELECT 1 FROM public.schema_migrations WHERE filename = '$file';" | xargs)
+            if [[ "$ALREADY_APPLIED" != "1" ]]; then
+              echo "Applying $file"
+              psql -v ON_ERROR_STOP=1 -f "$file"
+              psql -c "INSERT INTO public.schema_migrations (filename) VALUES ('$file');"
+            else
+              echo "$file already applied, skipping."
+            fi
           done
