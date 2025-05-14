@@ -1,5 +1,3 @@
-BEGIN;
-
 CREATE TABLE IF NOT EXISTS warehouse.dim_mission
 (
     mission_id integer NOT NULL,
@@ -10,12 +8,3 @@ CREATE TABLE IF NOT EXISTS warehouse.dim_mission
     load_ts timestamp without time zone,
     PRIMARY KEY (mission_id)
 );
-
-ALTER TABLE IF EXISTS warehouse.dim_mission
-    ADD CONSTRAINT fk_orbit FOREIGN KEY (mission_orbit_id)
-    REFERENCES warehouse.dim_orbit (orbit_id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    NOT VALID;
-
-COMMIT;
