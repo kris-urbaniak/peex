@@ -1,0 +1,102 @@
+ALTER TABLE IF EXISTS warehouse.dim_astronaut
+    ADD CONSTRAINT agency_fk FOREIGN KEY (astronaut_agency_id)
+    REFERENCES warehouse.dim_agency (agency_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.dim_space_station
+    ADD CONSTRAINT agency_fk FOREIGN KEY (space_station_agency_id)
+    REFERENCES warehouse.dim_agency (agency_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.fact_launches
+    ADD CONSTRAINT fk_agency FOREIGN KEY (launch_agency_id)
+    REFERENCES warehouse.dim_agency (agency_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.fact_launches
+    ADD CONSTRAINT fk_status FOREIGN KEY (launch_status_id)
+    REFERENCES warehouse.dim_launch_status (launch_status_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.fact_launches
+    ADD CONSTRAINT fk_pad FOREIGN KEY (launch_pad_id)
+    REFERENCES warehouse.dim_pad (pad_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.fact_launches
+    ADD CONSTRAINT fk_mission FOREIGN KEY (launch_mission_id)
+    REFERENCES warehouse.dim_mission (mission_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.fact_launches
+    ADD CONSTRAINT rocket_id FOREIGN KEY (launch_rocket_id)
+    REFERENCES warehouse.dim_rocket (rocket_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.dim_mission
+    ADD CONSTRAINT fk_orbit FOREIGN KEY (mission_orbit_id)
+    REFERENCES warehouse.dim_orbit (orbit_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.dim_rocket
+    ADD CONSTRAINT fk_launcher_configuration FOREIGN KEY (rocket_launcher_configuration_id)
+    REFERENCES warehouse.dim_launcher_configuration (launcher_configuration_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.dim_pad
+    ADD CONSTRAINT fk_locations FOREIGN KEY (location_id)
+    REFERENCES warehouse.dim_location (location_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.dim_launcher_configuration
+    ADD CONSTRAINT fk_agency FOREIGN KEY (launcher_configuration_agency_id)
+    REFERENCES warehouse.dim_agency (agency_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.fact_location_usage
+    ADD CONSTRAINT fk_location FOREIGN KEY (location_id)
+    REFERENCES warehouse.dim_location (location_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS warehouse.fact_pad_usage
+    ADD CONSTRAINT fk_pad FOREIGN KEY (pad_id)
+    REFERENCES warehouse.dim_pad (pad_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
