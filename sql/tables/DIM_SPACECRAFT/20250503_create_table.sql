@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS warehouse.dim_spacecraft
 (
     spacecraft_id integer NOT NULL,
@@ -8,3 +10,12 @@ CREATE TABLE IF NOT EXISTS warehouse.dim_spacecraft
     description text,
     PRIMARY KEY (spacecraft_id)
 );
+
+ALTER TABLE IF EXISTS warehouse.dim_spacecraft
+    ADD CONSTRAINT fk_agency FOREIGN KEY (manufacturer_id)
+    REFERENCES warehouse.dim_agency (agency_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+COMMIT;
