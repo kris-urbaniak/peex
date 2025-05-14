@@ -1,5 +1,3 @@
-BEGIN;
-
 CREATE TABLE IF NOT EXISTS warehouse.dim_astronaut
 (
     astronaut_id integer NOT NULL,
@@ -13,12 +11,3 @@ CREATE TABLE IF NOT EXISTS warehouse.dim_astronaut
     astronaut_wiki_url character varying(100),
     PRIMARY KEY (astronaut_id)
 );
-
-ALTER TABLE IF EXISTS warehouse.dim_astronaut
-    ADD CONSTRAINT agency_fk FOREIGN KEY (astronaut_agency_id)
-    REFERENCES warehouse.dim_agency (agency_id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    NOT VALID;
-
-COMMIT;
