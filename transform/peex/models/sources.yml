@@ -1,0 +1,51 @@
+version: 2
+
+sources:
+  - name: staging
+    schema: staging
+    description: "All raw JSONB feeds from SpaceDevs"
+
+    tables:
+      - name: agencies
+        description: "Raw agencies data feed"
+
+      - name: astronauts
+        description: "Raw astronaut data feed"
+
+      - name: launcher_configurations
+        description: "Raw launcher_configuration data feed"
+
+      - name: locations
+        description: "Raw locations data feed"
+
+      - name: pads
+        description: "Raw pads data feed"
+
+      - name: previous_launches
+        description: "Raw previous_launches data feed"
+
+      - name: space_stations
+        description: "Raw space_stations data feed"
+
+      - name: spacecraft
+        description: "Raw spacecraft data feed"
+
+      - name: launch_statuses
+        description: "Raw launch_statuses data feed"
+
+      - name: orbits
+        description: "Raw orbits data feed"
+
+  - name: warehouse
+    schema: warehouse
+    description: "DIM and FACT tables"
+
+    tables:
+      - name: fact_launches
+        description: "Fact table for launches"
+
+      - name: fact_location_usage
+        description: "Fact table for location usage"
+
+      - name: fact_pad_usage
+        description: "Fact table for pad usage"

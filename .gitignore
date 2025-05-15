@@ -1,0 +1,8 @@
+dbt_postgres_env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+transform/peex/logs/
+transform/peex/target/
+logs/
